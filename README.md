@@ -7,6 +7,8 @@ A hands-on learning repository featuring personal solutions and experiments usin
 ### Getting Started
 
 - Install dependencies: `npm install`
+- Running the Nest server `npm run start` -> The server is accessible at `localhost:3000`
+- Watch mode `npm run dev`
 
 ### API Endpoints
 
