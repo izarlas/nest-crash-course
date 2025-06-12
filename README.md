@@ -14,6 +14,8 @@ A hands-on learning repository featuring personal solutions and experiments usin
 
 ### Testing
 
+- `npm run test`
+
 ### License
 
 This project is licensed under the MIT License.

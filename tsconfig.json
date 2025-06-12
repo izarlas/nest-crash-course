@@ -16,7 +16,8 @@
       "*": ["node_modules/*"]
     },
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
   },
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules"]
