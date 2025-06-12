@@ -8,31 +8,38 @@ import {
   Put,
 } from "@nestjs/common";
 import { ItemDto } from "./dto/item.dto";
+import { ItemsService } from "./items.service";
+import { ItemInterface } from "./interfaces/item.interface";
 
 @Controller("items")
 export class ItemsController {
+  constructor(private readonly itemsService: ItemsService) {}
+
   @Get()
-  getAll(): string {
-    return "Get all items";
+  getAll(): Promise<ItemInterface[]> {
+    return this.itemsService.getAll();
   }
 
   @Get(":id")
-  getOne(@Param("id") id: string): string {
-    return `Item ${id}`;
+  getOne(@Param("id") id: string): Promise<ItemInterface | null> {
+    return this.itemsService.getOne(id);
   }
 
   @Post()
-  create(@Body() item: ItemDto): string {
-    return `Name: ${item.name}, Description: ${item.description}, Quantity: ${item.quantity}`;
+  create(@Body() item: ItemDto): Promise<ItemInterface> {
+    return this.itemsService.create(item);
   }
 
-  @Put("id")
-  update(@Body() item: ItemDto, @Param("id") id: string): string {
-    return `Updated item with id ${id} - Name: ${item.name}, Description: ${item.description}, Quantity: ${item.quantity}`;
+  @Put(":id")
+  update(
+    @Body() item: ItemDto,
+    @Param("id") id: string
+  ): Promise<ItemInterface | null> {
+    return this.itemsService.update(id, item);
   }
 
   @Delete(":id")
-  delete(@Param("id") id: string): string {
-    return `Delete item with ${id}`;
+  delete(@Param("id") id: string): Promise<ItemInterface | null> {
+    return this.itemsService.delete(id);
   }
 }

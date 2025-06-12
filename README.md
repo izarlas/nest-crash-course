@@ -19,3 +19,9 @@ A hands-on learning repository featuring personal solutions and experiments usin
 ### License
 
 This project is licensed under the MIT License.
+
+### TODO
+
+- Improve readme
+- Cleanup
+- Add tests with high coverage
