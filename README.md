@@ -7,14 +7,24 @@ A hands-on learning repository featuring personal solutions and experiments usin
 ### Getting Started
 
 - Install dependencies: `npm install`
-- Running the Nest server `npm run start` -> The server is accessible at `localhost:3000`
-- Watch mode `npm run dev`
+- Start the server `npm run start` or for watch mode `npm run dev`
+  - Access the API at [http://localhost:3000](http://localhost:3000)
+  - Access the Swagger UI at [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
 ### API Endpoints
 
 ### Testing
 
-- `npm run test`
+This project uses [Jest](https://jestjs.io/) for testing and code coverage.
+
+- To run tests:
+  `npm run test:integration`
+- To run single test
+  `npm run test:integration -- -t "name"`
+- To view coverage:
+  `npm run test:integration:coverage`
+
+Test results and coverage reports will be shown in the terminal.
 
 ### License
 
@@ -23,5 +33,4 @@ This project is licensed under the MIT License.
 ### TODO
 
 - Improve readme
-- Cleanup
 - Add tests with high coverage
