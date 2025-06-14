@@ -47,7 +47,7 @@ describe("Items APIs", () => {
   });
 
   describe("getAll", () => {
-    it("returns all items in mongo", async () => {
+    it("returns all items", async () => {
       await itemModel.create(mockItem);
 
       const response = await request(app.getHttpServer()).get(itemsApiUrl);
@@ -64,8 +64,7 @@ describe("Items APIs", () => {
       const response = await request(app.getHttpServer()).get(itemsApiUrl);
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBe(0);
+      expect(response.body).toStrictEqual([]);
     });
   });
 
@@ -129,7 +128,7 @@ describe("Items APIs", () => {
         .put(`${itemsApiUrl}/${foundItemId}`)
         .send(updatedItem);
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("_id");
       expect(response.body.name).toBe(updatedItem.name);
       expect(response.body.description).toBe(updatedItem.description);
