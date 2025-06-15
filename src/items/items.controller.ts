@@ -10,6 +10,7 @@ import {
 import { ItemDto } from "./dto/item.dto";
 import { ItemsService } from "./items.service";
 import { ItemInterface } from "./interfaces/item.interface";
+import { NonEmptyStringPipe } from "../shared/pipes/nonEmptyString.pipe";
 
 @Controller("items")
 export class ItemsController {
@@ -21,7 +22,9 @@ export class ItemsController {
   }
 
   @Get(":id")
-  getOne(@Param("id") id: string): Promise<ItemInterface | null> {
+  getOne(
+    @Param("id", NonEmptyStringPipe) id: string
+  ): Promise<ItemInterface | null> {
     return this.itemsService.getOne(id);
   }
 
@@ -33,13 +36,15 @@ export class ItemsController {
   @Put(":id")
   update(
     @Body() item: ItemDto,
-    @Param("id") id: string
+    @Param("id", NonEmptyStringPipe) id: string
   ): Promise<ItemInterface | null> {
     return this.itemsService.update(id, item);
   }
 
   @Delete(":id")
-  delete(@Param("id") id: string): Promise<ItemInterface | null> {
+  delete(
+    @Param("id", NonEmptyStringPipe) id: string
+  ): Promise<ItemInterface | null> {
     return this.itemsService.delete(id);
   }
 }

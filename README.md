@@ -33,4 +33,3 @@ This project is licensed under the MIT License.
 ### TODO
 
 - Improve readme
-- Add tests with high coverage

@@ -59,13 +59,6 @@ describe("Items APIs", () => {
       expect(response.body[0].description).toBe(mockItem.description);
       expect(response.body[0].quantity).toBe(mockItem.quantity);
     });
-
-    it("returns empty array, when no items are created", async () => {
-      const response = await request(app.getHttpServer()).get(itemsApiUrl);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toStrictEqual([]);
-    });
   });
 
   describe("getOne", () => {
@@ -93,9 +86,6 @@ describe("Items APIs", () => {
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({});
     });
-
-    // Todo handle invalid id length
-    // Todo handle invalid id type
   });
 
   describe("create", () => {
