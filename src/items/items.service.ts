@@ -1,7 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { ItemInterface } from "./interfaces/item.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { AppException } from "../shared/exceptions/app.exception";
 
 @Injectable()
 export class ItemsService {
@@ -14,7 +15,17 @@ export class ItemsService {
   }
 
   async getOne(id: string): Promise<ItemInterface | null> {
-    return await this.itemModel.findById(id);
+    const item = await this.itemModel.findById(id);
+
+    if (!item) {
+      throw new AppException(
+        "Item not found",
+        HttpStatus.NOT_FOUND,
+        "ITEM_NOT_FOUND"
+      );
+    }
+
+    return item;
   }
 
   async create(item: ItemInterface): Promise<ItemInterface> {

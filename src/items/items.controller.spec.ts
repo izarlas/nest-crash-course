@@ -78,13 +78,50 @@ describe("Items APIs", () => {
       expect(response.body).toHaveProperty("_id", foundItemId.toString());
     });
 
-    it("returns empty response, when item by id is not found", async () => {
+    // it("returns empty response, when item by id is not found", async () => {
+    //   const response = await request(app.getHttpServer()).get(
+    //     `${itemsApiUrl}/${mockItemId}`
+    //   );
+
+    //   expect(response.status).toBe(200);
+    //   expect(response.body).toStrictEqual({});
+    // });
+
+    it("returns BadRequestException when id input is missing", async () => {
+      const response = await request(app.getHttpServer()).get(
+        `${itemsApiUrl}/`
+      );
+
+      // TODO fix assertions
+    });
+    it("returns BadRequestException when id input is empty string", async () => {
+      const response = await request(app.getHttpServer()).get(
+        `${itemsApiUrl}/ `
+      );
+
+      // TODO fix assertions
+    });
+
+    it("returns BadRequestException when id input is not a string", async () => {
+      const numberIdParam: number = 5;
+      const response = await request(app.getHttpServer()).get(
+        `${itemsApiUrl}/${numberIdParam}`
+      );
+
+      // TODO fix assertions
+    });
+
+    it("returns HttpStatus code 404 NOT_FOUND with custom error message 'Item not found' when item by id is not found", async () => {
       const response = await request(app.getHttpServer()).get(
         `${itemsApiUrl}/${mockItemId}`
       );
 
-      expect(response.status).toBe(200);
-      expect(response.body).toStrictEqual({});
+      expect(response.status).toBe(404);
+      expect(response.body).toStrictEqual({
+        statusCode: 404,
+        message: "Item not found",
+        errorCode: "ITEM_NOT_FOUND",
+      });
     });
   });
 

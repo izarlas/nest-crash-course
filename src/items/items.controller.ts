@@ -22,10 +22,10 @@ export class ItemsController {
   }
 
   @Get(":id")
-  getOne(
+  async getOne(
     @Param("id", NonEmptyStringPipe) id: string
   ): Promise<ItemInterface | null> {
-    return this.itemsService.getOne(id);
+    return await this.itemsService.getOne(id);
   }
 
   @Post()

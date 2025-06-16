@@ -32,4 +32,5 @@ This project is licensed under the MIT License.
 
 ### TODO
 
+- Proper error handling and improve tests
 - Improve readme
