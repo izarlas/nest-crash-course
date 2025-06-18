@@ -17,7 +17,8 @@
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "strictNullChecks": true
   },
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules"]

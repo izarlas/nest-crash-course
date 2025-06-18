@@ -34,3 +34,4 @@ This project is licensed under the MIT License.
 
 - Proper error handling and improve tests
 - Improve readme
+- Implement test and document additional concepts

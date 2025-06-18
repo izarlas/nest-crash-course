@@ -6,12 +6,15 @@ import {
   Param,
   Post,
   Put,
+  UsePipes,
 } from "@nestjs/common";
 import { ItemDto } from "./dto/item.dto";
 import { ItemsService } from "./items.service";
 import { ItemInterface } from "./interfaces/item.interface";
 import { NonEmptyStringPipe } from "../shared/pipes/nonEmptyString.pipe";
 import { MongodbIdValidationPipe } from "../shared/pipes/mongodbValidationId.pipe";
+import { createItemSchema } from "./schemas/createItem.schema";
+import { ZodValidationPipe } from "../shared/pipes/zodValidation.pipe";
 
 @Controller("items")
 export class ItemsController {
@@ -30,6 +33,7 @@ export class ItemsController {
   }
 
   @Post()
+  @UsePipes(new ZodValidationPipe(createItemSchema))
   create(@Body() item: ItemDto): Promise<ItemInterface> {
     return this.itemsService.create(item);
   }

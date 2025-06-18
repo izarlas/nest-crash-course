@@ -17,7 +17,8 @@ describe("Items APIs", () => {
     description: "A test item",
     quantity: 42,
   };
-  const mockItemId = "000000000000000000000000";
+  const mockValidItemId = "000000000000000000000000";
+  const mockInvalidId = "abc1";
   let app: INestApplication;
   let mongoServer: MongoMemoryServer;
   let itemModel: Model<ItemInterface>;
@@ -78,12 +79,12 @@ describe("Items APIs", () => {
       expect(response.body).toHaveProperty("_id", foundItemId.toString());
     });
 
-    it("returns HttpStatus code 400 when id is not a valid mongodb object id", async () => {
-      const invalidId = "11";
+    it("returns HttpStatus code 400 when id is not a valid mongodb id", async () => {
       const response = await request(app.getHttpServer()).get(
-        `${itemsApiUrl}/${invalidId}`
+        `${itemsApiUrl}/${mockInvalidId}`
       );
 
+      expect(response.status).toBe(400);
       expect(response.body).toStrictEqual({
         message: "Invalid mongo db id format",
         error: "Bad Request",
@@ -93,7 +94,7 @@ describe("Items APIs", () => {
 
     it("returns HttpStatus code 404 NOT_FOUND with custom error message 'Item not found' when item by id is not found", async () => {
       const response = await request(app.getHttpServer()).get(
-        `${itemsApiUrl}/${mockItemId}`
+        `${itemsApiUrl}/${mockValidItemId}`
       );
 
       expect(response.status).toBe(404);
@@ -116,6 +117,53 @@ describe("Items APIs", () => {
       expect(response.body.name).toBe(mockItem.name);
       expect(response.body.description).toBe(mockItem.description);
       expect(response.body.quantity).toBe(mockItem.quantity);
+    });
+
+    it("returns HttpStatus code 400 when send body is missing name", async () => {
+      const response = await request(app.getHttpServer())
+        .post(itemsApiUrl)
+        .send({
+          description: mockItem.description,
+          quantity: mockItem.quantity,
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Validation failed",
+        error: "Bad Request",
+        statusCode: 400,
+      });
+    });
+
+    it("returns HttpStatus code 400 when send body is missing description", async () => {
+      const response = await request(app.getHttpServer())
+        .post(itemsApiUrl)
+        .send({
+          name: mockItem.name,
+          quantity: mockItem.quantity,
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Validation failed",
+        error: "Bad Request",
+        statusCode: 400,
+      });
+    });
+    it("returns HttpStatus code 400 when send body is missing quantity", async () => {
+      const response = await request(app.getHttpServer())
+        .post(itemsApiUrl)
+        .send({
+          name: mockItem.name,
+          description: mockItem.description,
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Validation failed",
+        error: "Bad Request",
+        statusCode: 400,
+      });
     });
   });
 
@@ -141,20 +189,36 @@ describe("Items APIs", () => {
       expect(response.body.description).toBe(updatedItem.description);
       expect(response.body.quantity).toBe(updatedItem.quantity);
     });
+
     it("does not create a new item, when item id is not found", async () => {
       const item = {
         name: "Test Item",
         description: "A test item",
         quantity: 20,
       };
+
       const response = await request(app.getHttpServer())
-        .put(`${itemsApiUrl}/${mockItemId}`)
+        .put(`${itemsApiUrl}/${mockValidItemId}`)
         .send(item);
 
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({});
     });
+
+    it("returns HttpStatus code 400 when id is not a valid mongodb id", async () => {
+      const response = await request(app.getHttpServer())
+        .put(`${itemsApiUrl}/${mockInvalidId}`)
+        .send(mockItem);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Invalid mongo db id format",
+        error: "Bad Request",
+        statusCode: 400,
+      });
+    });
   });
+
   describe("delete", () => {
     it("deletes item by id", async () => {
       await itemModel.create(mockItem);
@@ -170,13 +234,27 @@ describe("Items APIs", () => {
       const itemAfterDelete = await itemModel.findById(foundItemId);
       expect(itemAfterDelete).toBeNull();
     });
+
     it("returns null, when item by id is not found", async () => {
       const response = await request(app.getHttpServer()).delete(
-        `${itemsApiUrl}/${mockItemId}`
+        `${itemsApiUrl}/${mockValidItemId}`
       );
 
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({});
+    });
+
+    it("returns HttpStatus code 400 when id is not a valid mongodb id", async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`${itemsApiUrl}/${mockInvalidId}`)
+        .send(mockItem);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Invalid mongo db id format",
+        error: "Bad Request",
+        statusCode: 400,
+      });
     });
   });
 });
