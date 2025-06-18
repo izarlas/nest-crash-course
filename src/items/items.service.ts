@@ -15,17 +15,7 @@ export class ItemsService {
   }
 
   async getOne(id: string): Promise<ItemInterface | null> {
-    const item = await this.itemModel.findById(id);
-
-    if (!item) {
-      throw new AppException(
-        "Item not found",
-        HttpStatus.NOT_FOUND,
-        "ITEM_NOT_FOUND"
-      );
-    }
-
-    return item;
+    return await this.getItemByIdOrThrow(id);
   }
 
   async create(item: ItemInterface): Promise<ItemInterface> {
@@ -35,10 +25,34 @@ export class ItemsService {
   }
 
   async update(id: string, item: ItemInterface): Promise<ItemInterface | null> {
-    return await this.itemModel.findByIdAndUpdate(id, item, { new: true });
+    const updatedItem = await this.itemModel.findByIdAndUpdate(id, item, {
+      new: true,
+    });
+
+    return this.ensureItem(updatedItem);
   }
 
   async delete(id: string): Promise<ItemInterface | null> {
-    return await this.itemModel.findByIdAndDelete(id);
+    const deletedItem = await this.itemModel.findByIdAndDelete(id);
+
+    return this.ensureItem(deletedItem);
+  }
+
+  private async getItemByIdOrThrow(id: string): Promise<ItemInterface | null> {
+    const item = await this.itemModel.findById(id);
+
+    return this.ensureItem(item);
+  }
+
+  private ensureItem(item: ItemInterface | null): ItemInterface | null {
+    if (!item) {
+      throw new AppException(
+        "Item not found",
+        HttpStatus.NOT_FOUND,
+        "ITEM_NOT_FOUND"
+      );
+    }
+
+    return item;
   }
 }

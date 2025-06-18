@@ -8,13 +8,12 @@ import {
   Put,
   UsePipes,
 } from "@nestjs/common";
-import { ItemDto } from "./dto/item.dto";
 import { ItemsService } from "./items.service";
 import { ItemInterface } from "./interfaces/item.interface";
 import { NonEmptyStringPipe } from "../shared/pipes/nonEmptyString.pipe";
 import { MongodbIdValidationPipe } from "../shared/pipes/mongodbValidationId.pipe";
-import { createItemSchema } from "./schemas/createItem.schema";
 import { ZodValidationPipe } from "../shared/pipes/zodValidation.pipe";
+import { ItemValidationDto, itemValidationSchema } from "./item.validation";
 
 @Controller("items")
 export class ItemsController {
@@ -33,18 +32,21 @@ export class ItemsController {
   }
 
   @Post()
-  @UsePipes(new ZodValidationPipe(createItemSchema))
-  create(@Body() item: ItemDto): Promise<ItemInterface> {
+  create(
+    @Body(new ZodValidationPipe(itemValidationSchema)) item: ItemValidationDto
+  ): Promise<ItemInterface> {
     return this.itemsService.create(item);
   }
 
   @Put(":id")
   update(
-    @Body() item: ItemDto,
-    @Param("id", NonEmptyStringPipe, MongodbIdValidationPipe) id: string
+    @Param("id", NonEmptyStringPipe, MongodbIdValidationPipe) id: string,
+    @Body(new ZodValidationPipe(itemValidationSchema)) item: ItemValidationDto
   ): Promise<ItemInterface | null> {
     return this.itemsService.update(id, item);
   }
+
+  // Todo implement Patch and add tests
 
   @Delete(":id")
   delete(

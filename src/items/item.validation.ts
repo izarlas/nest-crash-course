@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createItemSchema = z
+export const itemValidationSchema = z
   .object({
     name: z.string(),
     quantity: z.number(),
@@ -8,4 +8,4 @@ export const createItemSchema = z
   })
   .required();
 
-export type CreateItemDto = z.infer<typeof createItemSchema>;
+export type ItemValidationDto = z.infer<typeof itemValidationSchema>;

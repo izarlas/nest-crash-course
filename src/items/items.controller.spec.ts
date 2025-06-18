@@ -93,6 +93,7 @@ describe("Items APIs", () => {
     });
 
     it("returns HttpStatus code 404 NOT_FOUND with custom error message 'Item not found' when item by id is not found", async () => {
+      await itemModel.create(mockItem);
       const response = await request(app.getHttpServer()).get(
         `${itemsApiUrl}/${mockValidItemId}`
       );
@@ -119,7 +120,7 @@ describe("Items APIs", () => {
       expect(response.body.quantity).toBe(mockItem.quantity);
     });
 
-    it("returns HttpStatus code 400 when send body is missing name", async () => {
+    it("returns HttpStatus code 400 when body is missing name", async () => {
       const response = await request(app.getHttpServer())
         .post(itemsApiUrl)
         .send({
@@ -135,7 +136,7 @@ describe("Items APIs", () => {
       });
     });
 
-    it("returns HttpStatus code 400 when send body is missing description", async () => {
+    it("returns HttpStatus code 400 when body is missing description", async () => {
       const response = await request(app.getHttpServer())
         .post(itemsApiUrl)
         .send({
@@ -150,7 +151,8 @@ describe("Items APIs", () => {
         statusCode: 400,
       });
     });
-    it("returns HttpStatus code 400 when send body is missing quantity", async () => {
+
+    it("returns HttpStatus code 400 when body is missing quantity", async () => {
       const response = await request(app.getHttpServer())
         .post(itemsApiUrl)
         .send({
@@ -173,7 +175,7 @@ describe("Items APIs", () => {
       const foundItem = await itemModel.findOne({ name: mockItem.name });
       const foundItemId = foundItem!._id;
 
-      const updatedItem = {
+      const updateItem = {
         name: "Updated item",
         description: "An updated item",
         quantity: 1,
@@ -181,16 +183,83 @@ describe("Items APIs", () => {
 
       const response = await request(app.getHttpServer())
         .put(`${itemsApiUrl}/${foundItemId}`)
-        .send(updatedItem);
+        .send(updateItem);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("_id");
-      expect(response.body.name).toBe(updatedItem.name);
-      expect(response.body.description).toBe(updatedItem.description);
-      expect(response.body.quantity).toBe(updatedItem.quantity);
+      expect(response.body.name).toBe(updateItem.name);
+      expect(response.body.description).toBe(updateItem.description);
+      expect(response.body.quantity).toBe(updateItem.quantity);
     });
 
-    it("does not create a new item, when item id is not found", async () => {
+    it("returns HttpStatus code 400 when body is missing name", async () => {
+      await itemModel.create(mockItem);
+      const foundItem = await itemModel.findOne({ name: mockItem.name });
+      const foundItemId = foundItem!._id;
+
+      const updateItem = {
+        description: "An updated item",
+        quantity: 1,
+      };
+
+      const response = await request(app.getHttpServer())
+        .put(`${itemsApiUrl}/${foundItemId}`)
+        .send(updateItem);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Validation failed",
+        error: "Bad Request",
+        statusCode: 400,
+      });
+    });
+
+    it("returns HttpStatus code 400 when body is missing description", async () => {
+      await itemModel.create(mockItem);
+      const foundItem = await itemModel.findOne({ name: mockItem.name });
+      const foundItemId = foundItem!._id;
+
+      const updateItem = {
+        name: "Updated item",
+        quantity: 1,
+      };
+
+      const response = await request(app.getHttpServer())
+        .put(`${itemsApiUrl}/${foundItemId}`)
+        .send(updateItem);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Validation failed",
+        error: "Bad Request",
+        statusCode: 400,
+      });
+    });
+
+    it("returns HttpStatus code 400 when body is missing quantity", async () => {
+      await itemModel.create(mockItem);
+      const foundItem = await itemModel.findOne({ name: mockItem.name });
+      const foundItemId = foundItem!._id;
+
+      const updateItem = {
+        name: "Updated item",
+        description: "An updated item",
+      };
+
+      const response = await request(app.getHttpServer())
+        .put(`${itemsApiUrl}/${foundItemId}`)
+        .send(updateItem);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Validation failed",
+        error: "Bad Request",
+        statusCode: 400,
+      });
+    });
+
+    it("returns HttpStatus code 404 NOT_FOUND with custom error message 'Item not found' when item by id is not found", async () => {
+      await itemModel.create(mockItem);
       const item = {
         name: "Test Item",
         description: "A test item",
@@ -201,8 +270,12 @@ describe("Items APIs", () => {
         .put(`${itemsApiUrl}/${mockValidItemId}`)
         .send(item);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toStrictEqual({});
+      expect(response.status).toBe(404);
+      expect(response.body).toStrictEqual({
+        statusCode: 404,
+        message: "Item not found",
+        errorCode: "ITEM_NOT_FOUND",
+      });
     });
 
     it("returns HttpStatus code 400 when id is not a valid mongodb id", async () => {
@@ -235,16 +308,22 @@ describe("Items APIs", () => {
       expect(itemAfterDelete).toBeNull();
     });
 
-    it("returns null, when item by id is not found", async () => {
+    it("returns HttpStatus code 404 NOT_FOUND with custom error message 'Item not found' when item by id is not found", async () => {
+      await itemModel.create(mockItem);
       const response = await request(app.getHttpServer()).delete(
         `${itemsApiUrl}/${mockValidItemId}`
       );
 
-      expect(response.status).toBe(200);
-      expect(response.body).toStrictEqual({});
+      expect(response.status).toBe(404);
+      expect(response.body).toStrictEqual({
+        statusCode: 404,
+        message: "Item not found",
+        errorCode: "ITEM_NOT_FOUND",
+      });
     });
 
     it("returns HttpStatus code 400 when id is not a valid mongodb id", async () => {
+      await itemModel.create(mockItem);
       const response = await request(app.getHttpServer())
         .delete(`${itemsApiUrl}/${mockInvalidId}`)
         .send(mockItem);
