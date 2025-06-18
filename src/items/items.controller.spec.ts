@@ -78,37 +78,17 @@ describe("Items APIs", () => {
       expect(response.body).toHaveProperty("_id", foundItemId.toString());
     });
 
-    // it("returns empty response, when item by id is not found", async () => {
-    //   const response = await request(app.getHttpServer()).get(
-    //     `${itemsApiUrl}/${mockItemId}`
-    //   );
-
-    //   expect(response.status).toBe(200);
-    //   expect(response.body).toStrictEqual({});
-    // });
-
-    it("returns BadRequestException when id input is missing", async () => {
+    it("returns HttpStatus code 400 when id is not a valid mongodb object id", async () => {
+      const invalidId = "11";
       const response = await request(app.getHttpServer()).get(
-        `${itemsApiUrl}/`
+        `${itemsApiUrl}/${invalidId}`
       );
 
-      // TODO fix assertions
-    });
-    it("returns BadRequestException when id input is empty string", async () => {
-      const response = await request(app.getHttpServer()).get(
-        `${itemsApiUrl}/ `
-      );
-
-      // TODO fix assertions
-    });
-
-    it("returns BadRequestException when id input is not a string", async () => {
-      const numberIdParam: number = 5;
-      const response = await request(app.getHttpServer()).get(
-        `${itemsApiUrl}/${numberIdParam}`
-      );
-
-      // TODO fix assertions
+      expect(response.body).toStrictEqual({
+        message: "Invalid mongo db id format",
+        error: "Bad Request",
+        statusCode: 400,
+      });
     });
 
     it("returns HttpStatus code 404 NOT_FOUND with custom error message 'Item not found' when item by id is not found", async () => {
