@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   UsePipes,
@@ -13,7 +14,12 @@ import { ItemInterface } from "./interfaces/item.interface";
 import { NonEmptyStringPipe } from "../shared/pipes/nonEmptyString.pipe";
 import { MongodbIdValidationPipe } from "../shared/pipes/mongodbValidationId.pipe";
 import { ZodValidationPipe } from "../shared/pipes/zodValidation.pipe";
-import { ItemValidationDto, itemValidationSchema } from "./item.validation";
+import {
+  ItemValidationDto,
+  itemValidationSchema,
+  PartialItemValidationDto,
+  partialItemValidationSchema,
+} from "./item.validation";
 
 @Controller("items")
 export class ItemsController {
@@ -46,7 +52,14 @@ export class ItemsController {
     return this.itemsService.update(id, item);
   }
 
-  // Todo implement Patch and add tests
+  @Patch(":id")
+  updatePartial(
+    @Param("id", NonEmptyStringPipe, MongodbIdValidationPipe) id: string,
+    @Body(new ZodValidationPipe(partialItemValidationSchema))
+    item: PartialItemValidationDto
+  ): Promise<ItemInterface | null> {
+    return this.itemsService.updatePartial(id, item);
+  }
 
   @Delete(":id")
   delete(

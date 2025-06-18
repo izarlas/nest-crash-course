@@ -292,6 +292,124 @@ describe("Items APIs", () => {
     });
   });
 
+  describe("updatePartial", () => {
+    it("updates only item name by id", async () => {
+      await itemModel.create(mockItem);
+      const foundItem = await itemModel.findOne({ name: mockItem.name });
+      const foundItemId = foundItem!._id;
+
+      const itemWithNewName = {
+        name: "New name",
+      };
+
+      const response = await request(app.getHttpServer())
+        .patch(`${itemsApiUrl}/${foundItemId}`)
+        .send(itemWithNewName);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("_id");
+      expect(response.body.name).toBe(itemWithNewName.name);
+      expect(response.body.description).toBe(mockItem.description);
+      expect(response.body.quantity).toBe(mockItem.quantity);
+    });
+
+    it("updates only item description by id", async () => {
+      await itemModel.create(mockItem);
+      const foundItem = await itemModel.findOne({ name: mockItem.name });
+      const foundItemId = foundItem!._id;
+
+      const itemWithNewDescription = {
+        description: "New description",
+      };
+
+      const response = await request(app.getHttpServer())
+        .patch(`${itemsApiUrl}/${foundItemId}`)
+        .send(itemWithNewDescription);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("_id");
+      expect(response.body.name).toBe(mockItem.name);
+      expect(response.body.description).toBe(
+        itemWithNewDescription.description
+      );
+      expect(response.body.quantity).toBe(mockItem.quantity);
+    });
+
+    it("updates only item quantity by id", async () => {
+      const initialItem = {
+        name: "Initial item name",
+        description: "Initial item description",
+        quantity: 5,
+      };
+      await itemModel.create(initialItem);
+      const foundItem = await itemModel.findOne({ name: initialItem.name });
+      const foundItemId = foundItem!._id;
+
+      const itemWithNewQuantity = {
+        quantity: 1000,
+      };
+
+      const response = await request(app.getHttpServer())
+        .patch(`${itemsApiUrl}/${foundItemId}`)
+        .send(itemWithNewQuantity);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("_id");
+      expect(response.body.name).toBe(initialItem.name);
+      expect(response.body.description).toBe(initialItem.description);
+      expect(response.body.quantity).toBe(itemWithNewQuantity.quantity);
+    });
+
+    it("partially updates item description and quantity by id", async () => {
+      await itemModel.create(mockItem);
+      const foundItem = await itemModel.findOne({ name: mockItem.name });
+      const foundItemId = foundItem!._id;
+
+      const updatedItem = {
+        description: "Updated description",
+        quantity: 1000,
+      };
+
+      const response = await request(app.getHttpServer())
+        .patch(`${itemsApiUrl}/${foundItemId}`)
+        .send(updatedItem);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("_id");
+      expect(response.body.name).toBe(mockItem.name);
+      expect(response.body.description).toBe(updatedItem.description);
+      expect(response.body.quantity).toBe(updatedItem.quantity);
+    });
+
+    it("returns HttpStatus code 404 NOT_FOUND with custom error message 'Item not found' when item by id is not found", async () => {
+      await itemModel.create(mockItem);
+      const response = await request(app.getHttpServer())
+        .patch(`${itemsApiUrl}/${mockValidItemId}`)
+        .send({ name: "item name" });
+
+      expect(response.status).toBe(404);
+      expect(response.body).toStrictEqual({
+        statusCode: 404,
+        message: "Item not found",
+        errorCode: "ITEM_NOT_FOUND",
+      });
+    });
+
+    it("returns HttpStatus code 400 when id is not a valid mongodb id", async () => {
+      await itemModel.create(mockItem);
+      const response = await request(app.getHttpServer())
+        .patch(`${itemsApiUrl}/${mockInvalidId}`)
+        .send(mockItem);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toStrictEqual({
+        message: "Invalid mongo db id format",
+        error: "Bad Request",
+        statusCode: 400,
+      });
+    });
+  });
+
   describe("delete", () => {
     it("deletes item by id", async () => {
       await itemModel.create(mockItem);

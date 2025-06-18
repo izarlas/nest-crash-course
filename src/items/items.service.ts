@@ -32,6 +32,17 @@ export class ItemsService {
     return this.ensureItem(updatedItem);
   }
 
+  async updatePartial(
+    id: string,
+    item: Partial<ItemInterface>
+  ): Promise<ItemInterface | null> {
+    const updatedItem = await this.itemModel.findByIdAndUpdate(id, item, {
+      new: true,
+    });
+
+    return this.ensureItem(updatedItem);
+  }
+
   async delete(id: string): Promise<ItemInterface | null> {
     const deletedItem = await this.itemModel.findByIdAndDelete(id);
 

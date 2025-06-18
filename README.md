@@ -32,7 +32,5 @@ This project is licensed under the MIT License.
 
 ### TODO
 
-- Proper error handling and improve tests
 - Improve readme
 - Implement test and document additional concepts
-- Implement Patch route and service method + add tests
